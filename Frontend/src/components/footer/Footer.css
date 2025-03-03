@@ -1,0 +1,101 @@
+.footer {
+    background-color: #f8f8f8;
+    padding: 40px 0;
+    color: #333;
+  }
+  
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .footer-logo {
+    flex: 1;
+    max-width: 30%;
+  }
+  
+  .footer-logo img {
+    max-width: 150px;
+  }
+  
+  .company-description {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .footer-brands img {
+    max-width: 50px;
+    margin-right: 10px;
+  }
+  
+  .footer-contact,
+  .footer-resources,
+  .footer-newsletter {
+    flex: 1;
+    max-width: 25%;
+  }
+  
+  .footer-contact h4,
+  .footer-resources h4,
+  .footer-newsletter h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .footer-contact ul,
+  .footer-resources ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .footer-contact li,
+  .footer-resources li {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .footer-contact a {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .footer-newsletter input {
+    padding: 10px;
+    margin-right: 10px;
+    width: 200px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .subscribe-btn {
+    padding: 10px 15px;
+    background-color: #ff4c4c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .subscribe-btn:hover {
+    background-color: #ff2a2a;
+  }
+  
+  .social-icons a {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 12px;
+  }
+  
+  .footer-bottom a {
+    color: #333;
+    text-decoration: none;
+  }
+  

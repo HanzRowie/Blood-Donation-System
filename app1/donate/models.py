@@ -1,3 +1,61 @@
 from django.db import models
 
 # Create your models here.
+
+
+class donateBlood(models.Model):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    BLOOD_GROUP_CHOICES = [
+        ('A+', 'A+'),
+        ('A-', 'A-'),
+        ('B+', 'B+'),
+        ('B-', 'B-'),
+        ('AB+', 'AB+'),
+        ('AB-', 'AB-'),
+        ('O+', 'O+'),
+        ('O-', 'O-'),
+    ]
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    phone = models.PositiveIntegerField(blank=True)
+    email =  models.EmailField()
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    blood_group = models.CharField(max_length=3, choices=BLOOD_GROUP_CHOICES)
+    address = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.first_name or "Unnamed Donor"
+    
+
+class requestBlood(models.Model):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    BLOOD_GROUP_CHOICES = [
+        ('A+', 'A+'),
+        ('A-', 'A-'),
+        ('B+', 'B+'),
+        ('B-', 'B-'),
+        ('AB+', 'AB+'),
+        ('AB-', 'AB-'),
+        ('O+', 'O+'),
+        ('O-', 'O-'),
+    ]
+    first_name = models.CharField(max_length=20)
+    last_name  = models.CharField(max_length=20)
+    phone = models.CharField(max_length=13)
+    blood_group = models.CharField(max_length=3, choices=BLOOD_GROUP_CHOICES)
+    address = models.CharField(max_length=90)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    note = models.TextField()
+    
+    def __str__(self):
+        return self.first_name
+
+
+        

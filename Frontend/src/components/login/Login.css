@@ -1,0 +1,149 @@
+body {
+    background-color: #2c3e50;
+    font-family: Arial, sans-serif;
+    background-color: #f8f1f1;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+   margin-bottom: 400px;
+  }
+  
+  .login-card {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 800px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 300px;
+  }
+  
+  .login-card .imglogin {
+    flex: 1;
+    background-color: #e8dfdf; /* Light background for the image section */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+  }
+  
+  .login-card .img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+   
+  }
+
+  .imglogin img{
+    border-radius: 10px;
+  }
+  
+  .login-card .form-section {
+    flex: 1;
+    padding: 40px;
+    text-align: center;
+  }
+  
+  .form-section h1 {
+    color: #c62828;
+    margin-bottom: 5px;
+  }
+  
+  .form-section h2 {
+    color: #c62828;
+    margin-bottom: 10px;
+    text-decoration: underline;
+    text-underline-position: below;
+    text-decoration-color: #c62828;
+  }
+  
+  .form-section p {
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+    max-width: 100%;
+   
+  }
+  
+  .form-group input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .login-btn {
+  
+    background-color: #c62828;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  
+  }
+  
+  .login-btn:hover {
+    background-color: darkred;
+  }
+  
+  .links {
+    margin-top: 15px;
+  }
+  
+  .links a {
+    display: block;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color:rgb(81, 58, 58)
+  }
+  
+  .register-btn {
+    color: #c62828;
+    font-weight: bold;
+    margin-top: 40px;
+  }
+  
+  .error {
+    color: #c62828;
+    margin-bottom: 10px;
+  }
+  
+  .login-container .link_forget {
+    text-decoration: underline;
+    text-underline-position: below;
+    text-decoration-color: #c62828;
+  }
+  
+
+.logout-btn {
+    width: 100%;
+    background-color: #c62828;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+.logout-btn:hover {
+    background-color: darkred;
+  }
+  

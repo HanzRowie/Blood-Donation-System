@@ -1,0 +1,50 @@
+body {
+    padding-top: 60px; /* Adjust based on navbar height */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #c62828 !important; /* Updated color */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white !important;
+}
+
+/* Navbar Links */
+.navbar-nav {
+    gap: 20px; /* Increased spacing between menu items */
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #a81d1d;
+    border-radius: 5px;
+}
+
+/* Button Styles */
+.btn-custom {
+    background-color: #c62828 !important;
+    border-color: white;
+    color: white !important;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: white !important;
+    color: #c62828 !important;
+}

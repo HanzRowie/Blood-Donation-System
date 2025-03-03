@@ -1,0 +1,146 @@
+/* Header Styling */
+.container-bloodh {
+  text-align: center;
+  background: #d43f3a;
+  padding: 20px;
+  color: white;
+  max-width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Makes sure the container is on top */
+}
+
+/* Adjust the container to avoid overlap with fixed header */
+.app-container.container-blood {
+  margin-top: 80px; /* Adjust this based on the height of the fixed header */
+}
+
+/* Title and Subtitle Styling */
+.title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+/* Form Container Styling */
+.form-container {
+  background: #fde3cf;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 600px;
+  margin: 0 auto;
+ 
+}
+
+/* Individual Form Group Styling */
+.form-group {
+  width: 48%;
+  margin-bottom: 15px;
+}
+
+/* Full Width Elements */
+.full-width {
+  width: 100%;
+}
+.history{
+  margin-left: 600px;
+}
+
+/* Label Styling */
+label {
+  display: block;
+  font-weight: bold;
+  color: #b22222;
+  margin-bottom: 5px;
+}
+
+/* Input, Select, and Textarea Styling */
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Textarea Height Adjustment */
+textarea {
+  height: 80px;
+}
+
+/* Button Styling */
+button {
+  background-color: #d43f3a;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #a62d2b;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #d43f3a;
+  color: white;
+}
+
+td {
+  background-color: #f9f9f9;
+}
+
+button.edit-btn, button.delete-btn {
+  background-color: #5bc0de;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.edit-btn:hover {
+  background-color: #31b0d5;
+}
+
+button.delete-btn {
+  background-color: #d9534f;
+}
+
+button.delete-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Style for error messages */
+p {
+  color: red;
+  font-size: 1rem;
+}
+
+/* Style for loading text */
+.loading {
+  font-size: 1.2rem;
+  color: #999;
+}
