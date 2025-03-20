@@ -15,7 +15,7 @@ body {
     align-items: center;
     width: 100%;
     height: 100%;
-   margin-bottom: 400px;
+ 
   }
   
   .login-card {
@@ -86,8 +86,12 @@ body {
     border: 1px solid #ddd;
     border-radius: 5px;
   }
+
+  .loginform{
+    gap: 15px;
+  }
   
-  .login-btn {
+  .loginbtn {
   
     background-color: #c62828;
     color: white;

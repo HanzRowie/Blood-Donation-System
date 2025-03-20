@@ -48,6 +48,8 @@ const BloodDonationHistory = () => {
       : "http://127.0.0.1:8000/donate/add/";
 
     const method = "POST";
+    const scrollY = window.scrollY; // Save current scroll position
+
     try {
       const response = await fetch(url, {
         method: method,
@@ -69,6 +71,10 @@ const BloodDonationHistory = () => {
         setEditingId(null);
         fetchDonations();
         setFormVisible(false);
+
+        setTimeout(() => {
+          window.scrollTo(0, scrollY); // Restore scroll position
+        }, 0);
       }
     } catch (err) {
       setError("An error occurred while submitting data.");
@@ -100,7 +106,9 @@ const BloodDonationHistory = () => {
 
   return (
     <div className="container-blood">
-      <h1>Blood Donation History</h1>
+      <div className="header-blood">
+        <h1>Blood Donation History</h1>
+      </div>
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -111,7 +119,7 @@ const BloodDonationHistory = () => {
 
       {formVisible && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-contentd">
             <form className="donhistory">
               <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} placeholder="First Name" required />
               <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Last Name" required />
@@ -145,41 +153,43 @@ const BloodDonationHistory = () => {
         </div>
       )}
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>DOB</th>
-            <th>Gender</th>
-            <th>Blood Group</th>
-            <th>Address</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {donations.map((donation) => (
-            <tr key={donation.id}>
-              <td>{donation.id}</td>
-              <td>{donation.first_name}</td>
-              <td>{donation.last_name}</td>
-              <td>{donation.phone}</td>
-              <td>{donation.email}</td>
-              <td>{donation.date_of_birth}</td>
-              <td>{donation.gender}</td>
-              <td>{donation.blood_group}</td>
-              <td>{donation.address}</td>
-              <td>
-                <button className="edit-btn" onClick={() => handleEdit(donation.id)}>Edit</button>
-                <button onClick={() => handleDelete(donation.id)}>Delete</button>
-              </td>
+      <div className="table-container">
+        <table className="donatehistorytable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>DOB</th>
+              <th>Gender</th>
+              <th>Blood Group</th>
+              <th>Address</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {donations.map((donation) => (
+              <tr key={donation.id}>
+                <td>{donation.id}</td>
+                <td>{donation.first_name}</td>
+                <td>{donation.last_name}</td>
+                <td>{donation.phone}</td>
+                <td>{donation.email}</td>
+                <td>{donation.date_of_birth}</td>
+                <td>{donation.gender}</td>
+                <td>{donation.blood_group}</td>
+                <td>{donation.address}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(donation.id)}>Edit</button>
+                  <button className="delete-btn" onClick={() => handleDelete(donation.id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

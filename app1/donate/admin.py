@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import donateBlood, requestBlood
+from .models import donateBlood, requestBlood,Contact
 
 # Register your models here.
 
@@ -11,3 +11,9 @@ class donateBloodAdmin(admin.ModelAdmin):
 @admin.register(requestBlood)
 class requestBloodAdmin(admin.ModelAdmin):
     list_display = ('first_name','last_name','phone','blood_group','address','note')
+
+
+
+@admin.register(Contact)
+class Contact(admin.ModelAdmin):
+    list_display =  ('name','email','address','feedback')

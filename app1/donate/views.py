@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import donateBlood, requestBlood
+from .models import donateBlood, requestBlood, Contact
 import json
 
 
@@ -89,8 +89,11 @@ def donateBloodView(request):
             donate = donateBlood(first_name = first_name, last_name=last_name, phone = phone, email = email, date_of_birth = date_of_birth, gender = gender, blood_group = blood_group,address = address)
             donate.save()
 
+            return JsonResponse({"message": "Donate blood submitted successfully"}, status=201)
+
         except Exception as e:
             return JsonResponse({"error": f"Error blood donation fail: {str(e)}"}, status=500)
+        
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 @csrf_exempt
@@ -101,7 +104,7 @@ def requestBloodView(request):
             first_name = data.get('first_name')
             last_name = data.get('last_name')
             phone = data.get('phone')
-            gender = data.get('gender')  # Added gender field
+            gender = data.get('gender') 
             blood_group = data.get('blood_group')
             address = data.get('address')
             note = data.get('note')
@@ -236,7 +239,7 @@ def addRequest(request):
         blood_group = data.get("blood_group")
         address = data.get("address")
         gender = data.get("gender")
-        note = data.get("note", "")  # Allow empty note but not None
+        note = data.get("note", "")  
 
         # Validate required fields
         if None in [first_name, last_name, phone, blood_group, address, gender]:
@@ -319,3 +322,27 @@ def deleteRequestHistory(request, id):
   
 
 
+@csrf_exempt
+def bloodContact(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            name = data.get('name')
+            email = data.get('email')
+            address = data.get('address')
+            feedback = data.get('feedback')
+
+            if  not all ([name,email,address,feedback]):
+                return  JsonResponse({"error":"All fields are required"},status =405)
+            
+            contact = Contact(name = name,  email = email, address = address, feedback = feedback)
+            contact.save()
+
+            return JsonResponse({"message": "Message send successfully"}, status=201)
+
+        except Exception as e:
+            return JsonResponse({"message":"Your feedback has been successfully sent."}, status=200)
+        
+    return JsonResponse({'error':"Method not allowed"},status = 405)
+
+ 

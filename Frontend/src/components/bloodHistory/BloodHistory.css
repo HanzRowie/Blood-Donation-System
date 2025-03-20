@@ -1,111 +1,143 @@
+/* General container */
 .container-blood {
-  width: 80%;
+  width: 90%;
   margin: auto;
+  padding-top: 160px;
   text-align: center;
+  min-height: 90vh;
 }
 
+/* Header */
+.header-blood {
+  margin-bottom: 20px;
+}
+
+.header-blood h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
+/* Add Button */
 .btn-add {
   background-color: #28a745;
   color: white;
-  border: none;
   padding: 10px 15px;
-  margin-bottom: 10px;
+  border: none;
   cursor: pointer;
-  font-size: 16px;
   border-radius: 5px;
+  font-size: 1rem;
 }
 
 .btn-add:hover {
   background-color: #218838;
 }
 
+/* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.modal-content {
-  background: white;
+.modal-contentd {
+  background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 400px;
+  max-width: 90%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
 }
 
-form input,
-form select {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin: 5px 0;
+.modal-contentd input,
+.modal-contentd select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 14px;
 }
 
-.donhistory{
-  margin-left: 600px;
-  margin-top: 30px;
-}
-form button {
-  width: 48%;
+.modal-contentd button {
   padding: 10px;
-  margin: 5px;
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  margin-left: 100px;
+  font-size: 1rem;
+  margin: 5px;
 }
 
-form button:first-of-type {
+.modal-contentd button:first-of-type {
   background-color: #007bff;
   color: white;
 }
 
-form button:first-of-type:hover {
+.modal-contentd button:first-of-type:hover {
   background-color: #0056b3;
 }
 
-form button:last-of-type {
+.modal-contentd button:last-of-type {
   background-color: #dc3545;
   color: white;
 }
 
-form button:last-of-type:hover {
+.modal-contentd button:last-of-type:hover {
   background-color: #c82333;
 }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+form{
+ gap: 1px;
 }
-
-table, th, td {
-  border: 1px solid #ddd;
-}
-
-th, td {
+/* Table Styling */
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #ccc;
   padding: 10px;
-  text-align: left;
+  background: #f9f9f9;
+}
+
+.donatehistorytable  {
+  width: 96%;
+  border-collapse: collapse;
+  table-layout: auto;
+  margin-left: 35px;
+}
+
+th,
+td {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  word-wrap: break-word;
 }
 
 th {
-  background-color: #f4f4f4;
+  background-color: #007bff;
+  color: white;
 }
 
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+  
+}
+
+
+
+
+/* Buttons */
 .edit-btn {
-  background-color: #ffc107;
-  color: white;
+  background-color:#31b0d5;
+  color: black;
+  padding: 10px;
   border: none;
-  padding: 5px 10px;
   cursor: pointer;
   border-radius: 5px;
 }
@@ -114,6 +146,31 @@ th {
   background-color: #e0a800;
 }
 
-button {
+.delete-btn {
+  background-color: rgb(194, 10, 10);
+  color: white;
+  padding: 10px;
+  border: none;
   cursor: pointer;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-contentd {
+    width: 90%;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 8px;
+  }
 }

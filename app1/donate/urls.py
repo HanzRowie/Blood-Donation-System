@@ -17,6 +17,7 @@ urlpatterns =[
     path("editRequestHistory/<int:id>/", views.editRequestHistory, name = "editRequestHistory"),
     path("saveRequestHistory/<int:id>/", views.saveRequestHistory, name = "saveRequestHistory"),
     path("deleteRequestHistory/<int:id>/",views.deleteRequestHistory, name = "deleteRequestHistory"),
+    path("donatecontact/",views.bloodContact, name = "donatecontact"),
 
 ]
    

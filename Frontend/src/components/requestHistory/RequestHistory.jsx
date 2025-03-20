@@ -42,6 +42,9 @@ const BloodRequestHistory = () => {
   };
 
   const handleSubmit = async () => {
+    // Store current scroll position
+    const scrollPosition = window.scrollY;
+
     const url = editingId
       ? `http://127.0.0.1:8000/donate/saveRequestHistory/${editingId}/`
       : "http://127.0.0.1:8000/donate/addRequest/";
@@ -66,6 +69,9 @@ const BloodRequestHistory = () => {
         setEditingId(null);
         fetchRequests();
         setFormVisible(false);
+
+        // Restore scroll position
+        window.scrollTo(0, scrollPosition);
       }
     } catch (err) {
       setError("An error occurred while submitting data.");
@@ -97,7 +103,9 @@ const BloodRequestHistory = () => {
 
   return (
     <div className="container-blood">
-      <h1>Blood Request History</h1>
+      <div className="bloodnew">
+        <h1>Blood Request History</h1>
+      </div>
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -165,48 +173,50 @@ const BloodRequestHistory = () => {
                 placeholder="Note"
                 required
               ></textarea>
-              <button type="button" onClick={handleSubmit}>
+              <button className="requestadd" type="button" onClick={handleSubmit}>
                 {editingId ? "Save" : "Add"}
               </button>
-              <button type="button" onClick={() => setFormVisible(false)}>Close</button>
+              <button type="button" className="requestclose" onClick={() => setFormVisible(false)}>Close</button>
             </form>
           </div>
         </div>
       )}
 
-      <table border="1">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Phone</th>
-            <th>Blood Group</th>
-            <th>Address</th>
-            <th>Gender</th>
-            <th>Note</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {requests.map((request) => (
-            <tr key={request.id}>
-              <td>{request.id}</td>
-              <td>{request.first_name}</td>
-              <td>{request.last_name}</td>
-              <td>{request.phone}</td>
-              <td>{request.blood_group}</td>
-              <td>{request.address}</td>
-              <td>{request.gender}</td>
-              <td>{request.note}</td>
-              <td>
-                <button onClick={() => handleEdit(request.id)}>Edit</button>
-                <button onClick={() => handleDelete(request.id)}>Delete</button>
-              </td>
+      <div className="table-container">
+        <table className="reqtable" border="1">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Phone</th>
+              <th>Blood Group</th>
+              <th>Address</th>
+              <th>Gender</th>
+              <th>Note</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {requests.map((request) => (
+              <tr key={request.id}>
+                <td>{request.id}</td>
+                <td>{request.first_name}</td>
+                <td>{request.last_name}</td>
+                <td>{request.phone}</td>
+                <td>{request.blood_group}</td>
+                <td>{request.address}</td>
+                <td>{request.gender}</td>
+                <td>{request.note}</td>
+                <td>
+                  <button className="reqtableedit" onClick={() => handleEdit(request.id)}>Edit</button>
+                  <button className="reqtabledelete" onClick={() => handleDelete(request.id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

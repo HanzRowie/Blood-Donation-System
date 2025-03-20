@@ -1,0 +1,137 @@
+.contact-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 20px;
+  margin-top: 325px;
+  gap: 250px;
+}
+
+.contact-left {
+  width: 45%;
+}
+
+.contact-left h5 {
+  color: purple;
+  font-weight: bold;
+}
+
+.contact-left h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.contact-left p {
+  font-size: 16px;
+  color: #555;
+}
+
+.contact-info {
+  margin-top: 20px;
+}
+
+.contact-item {
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.contact-item span {
+  display: flex;
+  align-items: center;
+  
+  color: #555;
+  font-size: 16px;
+  gap: 12px; /* Adds space between icon and text */
+}
+.contact-item p{
+margin-left: 22px;
+font-weight:bolder;
+}
+.social-icons {
+  display: flex;
+  gap: 10px;
+  margin-top: 35px;
+}
+
+.social-icons i {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.social-icons p{
+  font-weight: bold;
+  margin-top:3px ;
+}
+
+.contact-right {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 50%;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-right h1 {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  color: #d32f2f; /* Blood red color */
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.contact-right h1::after {
+  content: "";
+  width: 50px;
+  height: 3px;
+  background: #d32f2f;
+  display: block;
+  margin: 6px auto 0;
+  border-radius: 2px;
+}
+
+.contact-form label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.recaptcha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.contactbtn {
+  background: rgb(194, 10, 10);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+button:hover {
+  background: #c82333;
+}

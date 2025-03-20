@@ -1,12 +1,13 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "./Login.css";
 import logo from "../../assets/logo.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +19,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
@@ -29,8 +27,9 @@ const Login = () => {
       }
 
       const data = await response.json();
-      alert("Login successful!");
-      console.log("Response data:", data);
+      localStorage.setItem("token", data.token); // Store token in local storage
+      setIsAuthenticated(true);
+      navigate("/"); // Redirect to home after login
     } catch (err) {
       setError(err.message);
     }
@@ -39,12 +38,10 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Left Section for Logo */}
         <div className="imglogin">
           <img src={logo} alt="Logo" />
         </div>
 
-        {/* Right Section for Form */}
         <div className="form-section">
           <h1>Give Life</h1>
           <h2>Login</h2>
@@ -52,7 +49,7 @@ const Login = () => {
 
           {error && <p className="error">{error}</p>}
 
-          <form onSubmit={handleSubmit}>
+          <form className="loginform" onSubmit={handleSubmit}>
             <div className="form-gp">
               <input
                 type="text"
@@ -71,16 +68,12 @@ const Login = () => {
                 required
               />
             </div>
-            <button type="submit" >
-              Login
-            </button>
+            <button className="loginbtn" type="submit">Login</button>
           </form>
 
           <div className="links">
-            <a className="link_forget"href="/reset-password">I forget my password. Click here to reset</a>
-            <Link to="/signin" className="register-btn">
-              Register New Account
-            </Link>
+            <a className="link_forget" href="/reset-password">Forgot password? Click here to reset</a>
+            <Link to="/signin" className="register-btn">Register New Account</Link>
           </div>
         </div>
       </div>
@@ -89,4 +82,3 @@ const Login = () => {
 };
 
 export default Login;
-

@@ -9,6 +9,7 @@
     box-sizing: border-box;
     justify-content: center;
     height: 100vh;
+    margin-top: 400px;
    
   }
   
@@ -88,7 +89,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-left: 100px;
+    
   }
   
   .signin-button:hover {

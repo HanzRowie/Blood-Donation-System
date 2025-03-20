@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import "./DonateBlood.css";
 import logo from '../../assets/logo.jpg';
 
-
 const DonateBloodForm = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -17,6 +16,9 @@ const DonateBloodForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess('');
+
         if (!firstName || !lastName || !phone || !email || !dateOfBirth || !gender || !bloodGroup || !address) {
             setError('All fields are required');
             return;
@@ -30,11 +32,22 @@ const DonateBloodForm = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-            const responseData = await response.json();
-            if (response.status === 200) {
+
+            if (response.ok) {
                 setSuccess('Donation request was successful!');
                 setError('');
+
+                // Reset form fields after successful submission
+                setFirstName('');
+                setLastName('');
+                setPhone('');
+                setEmail('');
+                setDateOfBirth('');
+                setGender('');
+                setBloodGroup('');
+                setAddress('');
             } else {
+                const responseData = await response.json();
                 setError(responseData.error || 'Something went wrong');
                 setSuccess('');
             }
@@ -47,10 +60,9 @@ const DonateBloodForm = () => {
     return (
         <div className="donate-container">
             <div className="cll">
-              <h1>Donate Blood</h1>
+                <h1>Donate Blood</h1>
             </div>
             <div className="donate-content">
-                {/* Left Section (Logo) and Right Section (Form) in same container */}
                 <div className="left-right-container">
                     <div className="left-section">
                         <img src={logo} alt="Hamro LifeBank Logo" className="logo" />
@@ -60,7 +72,7 @@ const DonateBloodForm = () => {
                         <h2>Please send us your details</h2>
                         {error && <p className="error-message">{error}</p>}
                         {success && <p className="success-message">{success}</p>}
-                        <form onSubmit={handleSubmit}>
+                        <form className='donateform' onSubmit={handleSubmit}>
                             <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                             <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                             <input type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -88,7 +100,7 @@ const DonateBloodForm = () => {
                             
                             <input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
                             
-                            <button type="submit">Submit</button>
+                            <button className="donatebtn" type="submit">Submit</button>
                         </form>
                     </div>
                 </div>

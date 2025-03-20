@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import "./RequestBlood.css";
+import { User, Phone, Mail, MapPin, FileText, Users, Droplet } from 'lucide-react';
 
 const RequestBloodForm = () => {
     const [firstName, setFirstName] = useState('');
@@ -17,7 +18,7 @@ const RequestBloodForm = () => {
         e.preventDefault();
 
         if (!firstName || !lastName || !phone || !email || !address || !gender || !bloodGroup || !note) {
-            setError('All fields are required');
+            setError('⚠️ All fields are required');
             return;
         }
 
@@ -42,75 +43,171 @@ const RequestBloodForm = () => {
             const responseData = await response.json();
 
             if (response.status === 201) {
-                setSuccess('Blood request submitted successfully!');
+                setSuccess('✅ Blood request submitted successfully!');
                 setError('');
+                
+                setFirstName('');
+                setLastName('');
+                setPhone('');
+                setEmail('');
+                setAddress('');
+                setGender('');
+                setBloodGroup('');
+                setNote('');
             } else {
-                setError(responseData.error || 'Something went wrong');
+                setError(`⚠️ ${responseData.error || 'Something went wrong'}`);
                 setSuccess('');
             }
         } catch (err) {
-            setError('Error connecting to the server');
+            setError('⚠️ Error connecting to the server');
             setSuccess('');
         }
     };
 
     return (
-        <div className="form-containerrequest">
-            
-            <div className="req-div">
-            <h2 className="title">Request Blood Form</h2>
+        <div className="blood-request-container">
+            <div className="blood-request-header">
+                <h1>Request Blood</h1>
+                <p>Your request for blood donation could save a life. Please fill out the form below with accurate information.</p>
             </div>
             
-            {error && <p className="error-message">{error}</p>}
-            {success && <p className="success-message">{success}</p>}
-            
-            <form className= "rqform"  onSubmit={handleSubmit}>
-                <div className="form-grid">
-                    <div className="left-section">
-                        <label>First Name</label>
-                        <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                        
-                        <label>Last Name</label>
-                        <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                        
-                        <label>Phone</label>
-                        <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                        
-                        <label>Email</label>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    
-                    <div className="right-section">
-                        <label>Note</label>
-                        <textarea value={note} onChange={(e) => setNote(e.target.value)} />
-                        
-                        <label>Gender</label>
-                        <select value={gender} onChange={(e) => setGender(e.target.value)}>
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                        
-                        <label>Blood Group</label>
-                        <select value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
-                            <option value="">Select Blood Group</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                        </select>
-                        
-                        <label>Address</label>
-                        <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
-                    </div>
-                </div>
+            <div className="blood-request-wrapper">
+                {error && <div className="blood-request-error">{error}</div>}
+                {success && <div className="blood-request-success">{success}</div>}
                 
-                <button type="submit" className="submit-btn">Request Blood</button>
-            </form>
+                <form onSubmit={handleSubmit} className="blood-request-form">
+                    <div className="blood-request-grid">
+                        <div className="blood-request-column">
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><User size={18} /> First Name</label>
+                                <div className="blood-request-input-wrapper">
+                                  
+                                    <input 
+                                        type="text" 
+                                        value={firstName} 
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        placeholder="Enter your first name"
+                                        className="blood-request-input"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><User size={18} /> Last Name</label>
+                                <div className="blood-request-input-wrapper">
+                                  
+                                    <input 
+                                        type="text" 
+                                        value={lastName} 
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        placeholder="Enter your last name"
+                                        className="blood-request-input"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><Phone size={18} /> Phone</label>
+                                <div className="blood-request-input-wrapper">
+                                  
+                                    <input 
+                                        type="tel" 
+                                        value={phone} 
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        placeholder="Enter your phone number"
+                                        className="blood-request-input"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><Mail size={18} /> Email</label>
+                                <div className="blood-request-input-wrapper">
+                                    
+                                    <input 
+                                        type="email" 
+                                        value={email} 
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="Enter your email address"
+                                        className="blood-request-input"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="blood-request-column">
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><FileText size={18} /> Note</label>
+                                <div className="blood-request-input-wrapper blood-request-textarea-wrapper">
+                                 
+                                    <textarea 
+                                        value={note} 
+                                        onChange={(e) => setNote(e.target.value)}
+                                        placeholder="Please provide any additional information or specific requirements"
+                                        className="blood-request-textarea"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><Users size={18} /> Gender</label>
+                                <div className="blood-request-input-wrapper">
+                                  
+                                    <select 
+                                        value={gender} 
+                                        onChange={(e) => setGender(e.target.value)}
+                                        className="blood-request-select"
+                                    >
+                                        <option value="">Select your gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><Droplet size={18} /> Blood Group</label>
+                                <div className="blood-request-input-wrapper">
+                                    
+                                    <select 
+                                        value={bloodGroup} 
+                                        onChange={(e) => setBloodGroup(e.target.value)}
+                                        className="blood-request-select"
+                                    >
+                                        <option value="">Select blood group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="blood-request-group">
+                                <label className="blood-request-label"><MapPin size={18} /> Address</label>
+                                <div className="blood-request-input-wrapper">
+                                   
+                                    <input 
+                                        type="text" 
+                                        value={address} 
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        placeholder="Enter your complete address"
+                                        className="blood-request-input"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" className="blood-request-submit">
+                        Submit Request
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };
