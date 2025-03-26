@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import logo from '../../assets/logo.jpg'
+import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.jpg";
 import "./Signin.css";
 
-function Signin() {
+function Signin({ setIsAuthenticated }) {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -32,8 +34,9 @@ function Signin() {
 
       const result = await response.json();
       if (response.status === 201) {
-        setSuccess(result.success);
-        setError("");
+        localStorage.setItem("token", result.token); // Store token
+        setIsAuthenticated(true); // Set authentication state
+        navigate("/"); // Redirect to home
       } else {
         setError(result.error);
         setSuccess("");
@@ -45,10 +48,9 @@ function Signin() {
 
   return (
     <div className="signin-container">
-      
       <div className="signin-box">
-      <div className="imgsign">
-                <img src={logo} alt="Logo" />
+        <div className="imgsign">
+          <img src={logo} alt="Logo" />
         </div>
         <h2>Sign Up</h2>
         <p>Create Your Account</p>
@@ -101,9 +103,7 @@ function Signin() {
               onChange={(e) => setConPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="signin-button">
-            Sign Up
-          </button>
+          <button type="submit" className="signin-button">Sign Up</button>
         </form>
 
         {error && <p className="error">{error}</p>}

@@ -17,6 +17,7 @@ const BloodDonationHistory = () => {
     address: "",
   });
   const [editingId, setEditingId] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     fetchDonations();
@@ -95,12 +96,20 @@ const BloodDonationHistory = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await fetch(`http://127.0.0.1:8000/donate/deleteHistory/${id}/`, { method: "POST" });
-      fetchDonations();
-    } catch (err) {
-      setError("An error occurred while deleting the record.");
+  const handleDelete = (id) => {
+    setConfirmDelete(id);
+  };
+
+  const confirmDeletion = async () => {
+    if (confirmDelete) {
+      try {
+        await fetch(`http://127.0.0.1:8000/donate/deleteHistory/${confirmDelete}/`, { method: "POST" });
+        fetchDonations();
+      } catch (err) {
+        setError("An error occurred while deleting the record.");
+      } finally {
+        setConfirmDelete(null);
+      }
     }
   };
 
@@ -121,18 +130,50 @@ const BloodDonationHistory = () => {
         <div className="modal-overlay">
           <div className="modal-contentd">
             <form className="donhistory">
-              <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} placeholder="First Name" required />
-              <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Last Name" required />
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" required />
-              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
-              <input type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} required />
-              
+              <input
+                type="text"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                placeholder="First Name"
+                required
+              />
+              <input
+                type="text"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                placeholder="Last Name"
+                required
+              />
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Phone"
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                required
+              />
+              <input
+                type="date"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={handleChange}
+                required
+              />
               <select name="gender" value={formData.gender} onChange={handleChange} required>
                 <option value="">Select Gender</option>
                 <option value="M">Male</option>
                 <option value="F">Female</option>
               </select>
-              
               <select name="blood_group" value={formData.blood_group} onChange={handleChange} required>
                 <option value="">Select Blood Group</option>
                 <option value="A+">A+</option>
@@ -144,9 +185,17 @@ const BloodDonationHistory = () => {
                 <option value="O+">O+</option>
                 <option value="O-">O-</option>
               </select>
-              
-              <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Address" required />
-              <button type="button" onClick={handleSubmit}>{editingId ? "Save" : "Add"}</button>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Address"
+                required
+              />
+              <button type="button" onClick={handleSubmit}>
+                {editingId ? "Save" : "Add"}
+              </button>
               <button type="button" onClick={() => setFormVisible(false)}>Close</button>
             </form>
           </div>
@@ -190,6 +239,17 @@ const BloodDonationHistory = () => {
           </tbody>
         </table>
       </div>
+
+      {confirmDelete && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>Are you sure you want to delete this donation record?</p>
+            <button className="confirm-btn" onClick={confirmDeletion}>Yes, Delete</button>
+            <button className="cancel-btn" onClick={() => setConfirmDelete(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

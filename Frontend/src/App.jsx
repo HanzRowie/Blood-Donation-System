@@ -33,7 +33,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/signin" element={<Signin />} />
+          <Route path="/signin" element={<Signin setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
 
           {/* Protected Routes */}

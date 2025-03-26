@@ -16,6 +16,7 @@ const BloodRequestHistory = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [formVisible, setFormVisible] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     fetchRequests();
@@ -42,12 +43,11 @@ const BloodRequestHistory = () => {
   };
 
   const handleSubmit = async () => {
-    // Store current scroll position
-    const scrollPosition = window.scrollY;
-
     const url = editingId
       ? `http://127.0.0.1:8000/donate/saveRequestHistory/${editingId}/`
       : "http://127.0.0.1:8000/donate/addRequest/";
+
+    const scrollY = window.scrollY; // Save scroll position before submitting
 
     try {
       const response = await fetch(url, {
@@ -67,11 +67,13 @@ const BloodRequestHistory = () => {
           note: "",
         });
         setEditingId(null);
-        fetchRequests();
         setFormVisible(false);
 
-        // Restore scroll position
-        window.scrollTo(0, scrollPosition);
+        // Ensure UI updates before restoring scroll position
+        setTimeout(() => {
+          fetchRequests();
+          window.scrollTo({ top: scrollY, behavior: "smooth" });
+        }, 100);
       }
     } catch (err) {
       setError("An error occurred while submitting data.");
@@ -92,20 +94,29 @@ const BloodRequestHistory = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await fetch(`http://127.0.0.1:8000/donate/deleteRequestHistory/${id}/`, { method: "POST" });
-      fetchRequests();
-    } catch (err) {
-      setError("An error occurred while deleting the record.");
+  const handleDelete = (id) => {
+    setConfirmDelete(id);
+  };
+
+  const confirmDeletion = async () => {
+    if (confirmDelete) {
+      try {
+        await fetch(`http://127.0.0.1:8000/donate/deleteRequestHistory/${confirmDelete}/`, { method: "POST" });
+        fetchRequests();
+      } catch (err) {
+        setError("An error occurred while deleting the record.");
+      } finally {
+        setConfirmDelete(null);
+      }
     }
   };
 
   return (
     <div className="container-blood">
-      <div className="bloodnew">
-        <h1>Blood Request History</h1>
-      </div>
+      <div class="bloodnew">
+        <h1> Blood Request History</h1>
+    
+    </div>
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -217,6 +228,17 @@ const BloodRequestHistory = () => {
           </tbody>
         </table>
       </div>
+
+      {confirmDelete && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>Are you sure you want to delete this request record?</p>
+            <button className="confirm-btn" onClick={confirmDeletion}>Yes, Delete</button>
+            <button className="cancel-btn" onClick={() => setConfirmDelete(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

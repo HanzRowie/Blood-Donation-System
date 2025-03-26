@@ -63,11 +63,11 @@ const ContactForm = () => {
                 <div className="contact-info">
                     <div className="contact-item">
                         <span><FaEnvelope /> Email:</span>
-                        <p> contact@company.com</p>
+                        <p> ItahariLifeBank@company.com</p>
                     </div>
                     <div className="contact-item">
                         <span><FaPhone /> Phone:</span>
-                        <p>(123) 123-3213-23</p>
+                        <p>(+977) 98000670</p>
                     </div>
                     <div className="social-icons">
                         <p>Reach out to us on:</p>
