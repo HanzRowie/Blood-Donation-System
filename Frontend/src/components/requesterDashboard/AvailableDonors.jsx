@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://127.0.0.1:8000/donate/ViewAllDonors/";
 
@@ -6,6 +7,8 @@ const AvailableDonors = () => {
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const fetchDonors = async () => {
     setLoading(true);
@@ -23,6 +26,22 @@ const AvailableDonors = () => {
       setError(err.message);
     }
     setLoading(false);
+  };
+
+  const handleChat = async (username) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/chat/get_or_create_private_chatroom/${username}/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Failed to start chat");
+      navigate(`/chat/${data.group_name}`);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   useEffect(() => {
@@ -64,6 +83,11 @@ const AvailableDonors = () => {
                 <td>{donor.blood_group}</td>
                 <td>{donor.address}</td>
                 <td>{donor.is_approved ? "Yes" : "No"}</td>
+                <td>
+                  <button onClick={() => handleChat(donor.username)} disabled={!donor.is_approved}>
+                    Chat with Donor
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
