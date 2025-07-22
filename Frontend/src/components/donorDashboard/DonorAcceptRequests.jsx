@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://127.0.0.1:8000/donate/ViewAllRequests/";
 const ACCEPT_URL = "http://127.0.0.1:8000/donateacceptrequest/";
@@ -8,6 +9,7 @@ const DonorAcceptRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [accepting, setAccepting] = useState(null);
+  const navigate = useNavigate();
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -48,6 +50,27 @@ const DonorAcceptRequests = () => {
       alert(err.message);
     }
     setAccepting(null);
+  };
+
+  const handleChat = async (username) => {
+    console.log("Attempting to chat with username:", username);
+    if (!username || username === 'undefined') {
+      alert("Cannot start chat: Username not available for this requester");
+      return;
+    }
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/chat/get_or_create_private_chatroom/${username}/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Failed to start chat");
+      navigate(`/chat/${data.group_name}`);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -97,6 +120,20 @@ const DonorAcceptRequests = () => {
                   ) : (
                     <span>Accepted</span>
                   )}
+                  {/* Chat with Requester button */}
+                  <button
+                    style={{ marginLeft: 8 }}
+                    onClick={() => {
+                      console.log("Request object:", req);
+                      const username = req.username || (req.user && req.user.username);
+                      console.log("Extracted username:", username);
+                      handleChat(username);
+                    }}
+                    disabled={!req.username && (!req.user || !req.user.username)}
+                    title={!req.username && (!req.user || !req.user.username) ? "No username available for requester" : "Chat with Requester"}
+                  >
+                    Chat with Requester
+                  </button>
                 </td>
               </tr>
             ))}
