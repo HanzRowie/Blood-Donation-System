@@ -25,10 +25,16 @@ const BloodDonationHistory = () => {
 
   const fetchDonations = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/donate/bloodHistory/");
+      const response = await fetch("http://127.0.0.1:8000/donate/DonateBloodView/", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
-        setDonations(data.donations);
+        setDonations(Array.isArray(data) ? data : data.donations || []);
+      } else if (response.status === 401) {
+        setError("You are not authorized. Please log in.");
       } else {
         setError("Failed to fetch donations.");
       }
@@ -45,7 +51,7 @@ const BloodDonationHistory = () => {
 
   const handleSubmit = async () => {
     const url = editingId
-      ? `http://127.0.0.1:8000/donate/saveHistory/${editingId}/`
+      ? `http://127.0.0.1:8000/donate/DonateBloodView/${editingId}/`
       : "http://127.0.0.1:8000/donate/add/";
 
     const method = "POST";
@@ -54,7 +60,10 @@ const BloodDonationHistory = () => {
     try {
       const response = await fetch(url, {
         method: method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+        },
         body: JSON.stringify(formData),
       });
 
@@ -76,6 +85,10 @@ const BloodDonationHistory = () => {
         setTimeout(() => {
           window.scrollTo(0, scrollY); // Restore scroll position
         }, 0);
+      } else if (response.status === 401) {
+        setError("You are not authorized. Please log in.");
+      } else {
+        setError("Failed to submit data.");
       }
     } catch (err) {
       setError("An error occurred while submitting data.");
@@ -84,12 +97,20 @@ const BloodDonationHistory = () => {
 
   const handleEdit = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/donate/editHistory/${id}/`);
+      const response = await fetch(`http://127.0.0.1:8000/donate/DonateBloodView/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setFormData(data);
         setEditingId(id);
         setFormVisible(true);
+      } else if (response.status === 401) {
+        setError("You are not authorized. Please log in.");
+      } else {
+        setError("Failed to fetch data for edit.");
       }
     } catch (err) {
       setError("An error occurred while fetching data for edit.");
@@ -103,8 +124,19 @@ const BloodDonationHistory = () => {
   const confirmDeletion = async () => {
     if (confirmDelete) {
       try {
-        await fetch(`http://127.0.0.1:8000/donate/deleteHistory/${confirmDelete}/`, { method: "POST" });
-        fetchDonations();
+        const response = await fetch(`http://127.0.0.1:8000/donate/DonateBloodView/${confirmDelete}/`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access")}`,
+          },
+        });
+        if (response.ok) {
+          fetchDonations();
+        } else if (response.status === 401) {
+          setError("You are not authorized. Please log in.");
+        } else {
+          setError("Failed to delete the record.");
+        }
       } catch (err) {
         setError("An error occurred while deleting the record.");
       } finally {

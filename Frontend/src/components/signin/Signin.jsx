@@ -11,6 +11,7 @@ function Signin({ setIsAuthenticated }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [conPassword, setConPassword] = useState("");
+  const [role, setRole] = useState("donor");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -23,10 +24,11 @@ function Signin({ setIsAuthenticated }) {
       email,
       password,
       conpassword: conPassword,
+      role,
     };
 
     try {
-      const response = await fetch("http://localhost:8000/donate/signin/", {
+      const response = await fetch("http://localhost:8000/donate/RegisterView/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -102,6 +104,16 @@ function Signin({ setIsAuthenticated }) {
               value={conPassword}
               onChange={(e) => setConPassword(e.target.value)}
             />
+          </div>
+          <div className="input-group">
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="role-select"
+            >
+              <option value="donor">Donor</option>
+              <option value="requester">Requester</option>
+            </select>
           </div>
           <button type="submit" className="signin-button">Sign Up</button>
         </form>

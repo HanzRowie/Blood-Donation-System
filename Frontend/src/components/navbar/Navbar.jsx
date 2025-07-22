@@ -6,10 +6,14 @@ import  blood1 from '../../assets/blood1.jpeg'
 
 
 const Navbar = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("access");
+  const role = localStorage.getItem("role");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
     window.location.reload();
   };
 
@@ -27,18 +31,44 @@ const Navbar = () => {
             <li className="nav-item">
               <Link className="nav-link" to="/home">Home</Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/blood-donations">Blood Donation History</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/request-donations">Blood Request History</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/donate-blood">Donate Blood</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/request-blood">Request Blood</Link>
-            </li>
+            {token && role === "donor" && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/donor-dashboard">Dashboard</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/my-donations">My Donations</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/accept-requests">Accept Requests</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/blood-donations">Blood Donation History</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/donate-blood">Donate Blood</Link>
+                </li>
+              </>
+            )}
+            {token && role === "requester" && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/requester-dashboard">Dashboard</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/my-requests">My Requests</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/available-donors">Available Donors</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/request-donations">Blood Request History</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/request-blood">Request Blood</Link>
+                </li>
+              </>
+            )}
             <li className="nav-item">
               <Link className="nav-link" to="/contact">Contact Us</Link>
             </li>
@@ -54,7 +84,10 @@ const Navbar = () => {
                 <Link className="btn btn-outline-primary me-2" to="/login">Login</Link>
               </>
             ) : (
-              <button className="btn2" onClick={handleLogout}>Logout</button>
+              <>
+                <Link className="btn btn-outline-secondary me-2" to="/profile">Profile</Link>
+                <button className="btn2" onClick={handleLogout}>Logout</button>
+              </>
             )}
           </div>
         </div>

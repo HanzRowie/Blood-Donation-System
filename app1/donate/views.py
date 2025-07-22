@@ -3,61 +3,142 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import donateBlood, requestBlood, Contact
+from .models import donateBlood, requestBlood, Contact, Profile, BloodStock
 import json
+from django.shortcuts import render
+from .serializers import RegisterSerializer,LoginSerializer, DonateBloodSerializer, RequestBLoodSerializers, ContactSerializers, UserChangePasswordSerializer, ProfileSerializer, SendPasswordResetEmailSerializer, UserPasswordResetSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated 
+from django.db.models import Q
+from django.core.paginator import Paginator
+from django.core.mail import send_mail
+from django.conf import settings
+from .permissions import IsDonor, IsRequester, IsAdmin
+from rest_framework.permissions import AllowAny
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
-@csrf_exempt
-def signin(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
 
-            username = data.get('username')
-            first_name = data.get('first_name')
-            last_name = data.get('last_name')
-            email = data.get('email')
-            password = data.get('password')
-            conpassword = data.get('conpassword')
+class SearchBlood(APIView):
+    def get(self, request):
+        search_query = request.GET.get('search', '')  
+        blood_group = request.GET.get('blood_group', '') 
 
-            if not all([username, first_name, last_name, email, password, conpassword]):
-                return JsonResponse({"error": "All fields are required."}, status=400)
+        queryset = donateBlood.objects.all()
 
-            if password != conpassword:
-                return JsonResponse({"error": "Passwords do not match."}, status=400)
+        if search_query:
+            queryset = queryset.filter(address__icontains=search_query)
 
-            if User.objects.filter(username=username).exists():
-                return JsonResponse({"error": "Username already exists."}, status=400)
+        if blood_group:
+            # Case-insensitive exact match for blood group
+            queryset = queryset.filter(blood_group__iexact=blood_group)
 
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.first_name = first_name
-            user.last_name = last_name
-            user.save()
+        page_number = request.GET.get('page', 1)
+        paginator = Paginator(queryset, 2)  
+        page_obj = paginator.get_page(page_number)
 
-            return JsonResponse({"success": "User created successfully."}, status=201)
+        serializer = DonateBloodSerializer(page_obj, many=True)
 
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        return Response({
+            'data': serializer.data,
+            'message': "Donor(s) fetched successfully"
+        }, status=status.HTTP_200_OK)
+
+
+class SearchRequest(APIView):
+    def get(self, request):
+        search_query = request.GET.get('search', '')
+        blood_group = request.GET.get('blood_group', '')
+
+        queryset = requestBlood.objects.all()
+
+        if search_query:
+            queryset = queryset.filter(address__icontains=search_query)
+
+        if blood_group:
+            queryset = queryset.filter(blood_group__iexact=blood_group)
+
+        page_number = request.GET.get('page', 1)
+        paginator = Paginator(queryset, 2)  
+        page_obj = paginator.get_page(page_number)
+
+        serializer = RequestBLoodSerializers(page_obj, many=True)
+
+        return Response({
+            'data': serializer.data,
+            'message': "Request(s) fetched successfully"
+        }, status=status.HTTP_200_OK)
+
+
+
+class RegisterView(APIView):
+    def post(self, request):
+        try: 
+            data = request.data
+            serializer = RegisterSerializer(data=data)
+            
+            if not serializer.is_valid():
+                return Response({
+                    'data': serializer.errors,
+                    'message': "Something went wrong"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            user = serializer.save()
+
+            user_email = user.email
+            user_name = user.first_name
+
+            subject = "Welcome to Our Platform!"
+            message = f"Hi {user_name},\n\nThank you for registering with us. Your account has been created successfully.\n\nBest regards,\nYour Team"
+
+            try:
+                send_mail(
+                    subject=subject,
+                    message=message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[user_email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                return Response({
+                    'data': str(e),
+                    'message': "User created but email failed to send"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({
+                'data': {},
+                'message': "Your account has been created successfully and a confirmation email has been sent"
+            }, status=status.HTTP_201_CREATED)
+
         except Exception as e:
-            return JsonResponse({"error": f"Error creating user: {str(e)}"}, status=500)
+            return Response({
+                'data': str(e),
+                'message': "An error occurred"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({"error": "Invalid request method."}, status=405)
-
-@csrf_exempt
-def Handellogin(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        username = data.get("username")
-        password = data.get("password")
+class LoginView(APIView):
+    def post(self, request):
+        try:
+            serializer = LoginSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response({
+                    'data': serializer.errors,
+                    'message': "Something went wrong"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            
+            token_response = serializer.get_jwt_token(serializer.validated_data)
+            return Response(token_response, status=status.HTTP_200_OK)
         
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({"message": "Login successful!"}, status=200)
-        else:
-            return JsonResponse({"error": "Invalid username or password"}, status=400)
-    return JsonResponse({"error": "Invalid request method"}, status=405)
-
+        except Exception as e:
+            print("Login error:", e) 
+            return Response({
+                'data': {},
+                'message': "An error occurred"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 def Handellogout(request):
         if request.method =="POST":
@@ -69,280 +150,290 @@ def Handellogout(request):
                 return JsonResponse({"error": f"Error during logout: {str(e)}"}, status=500)
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
-@csrf_exempt
-def donateBloodView(request):
-    if request.method=="POST":
-        try:
-            data = json.loads(request.body)
-            first_name = data.get("first_name")
-            last_name = data.get("last_name")
-            phone = data.get("phone")
-            email = data.get("email")
-            date_of_birth = data.get("date_of_birth")
-            gender = data.get("gender")
-            blood_group = data.get("blood_group")
-            address = data.get("address")
+class  UserChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request,format = None):
+        serializer  = UserChangePasswordSerializer(data = request.data, context = {'user':request.user})
+        if serializer.is_valid(raise_exception=True):
+            return Response({'msg':'password changed successfully'}, status=status.HTTP_200_OK)
+        return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if not all ([first_name, last_name, phone, email, date_of_birth, gender, blood_group, address]):
-                return JsonResponse({"error":"All fields are required"},status=400)
-            
-            donate = donateBlood(first_name = first_name, last_name=last_name, phone = phone, email = email, date_of_birth = date_of_birth, gender = gender, blood_group = blood_group,address = address)
-            donate.save()
+class SendPasswordResetEmailView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request , format= None):
+        serializer = SendPasswordResetEmailSerializer(data = request.data)
+        if serializer.is_valid(raise_exception=True):
+              return Response({'msg':'Password Reset Link send. Please check your Email'}, status=status.HTTP_200_OK)
+        return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            return JsonResponse({"message": "Donate blood submitted successfully"}, status=201)
+class UserPasswordResetView(APIView):
+    def post(self, request, uid, token, format = None):
+        serializer = UserPasswordResetSerializer(data=request.data, context={'uid':uid,'token':token})
+        if serializer.is_valid(raise_exception=True):
+            return  Response ({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
+        return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        except Exception as e:
-            return JsonResponse({"error": f"Error blood donation fail: {str(e)}"}, status=500)
+
+
+class DonateBloodView(APIView):
+    permission_classes = [IsAuthenticated, IsDonor]
+    def get(self, request, pk=None):
+        if pk:
+            don = get_object_or_404(donateBlood, pk=pk)
+            serializer = DonateBloodSerializer(don)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            approved_donors = donateBlood.objects.filter(is_approved=True) 
+            serializer = DonateBloodSerializer(approved_donors, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-
-@csrf_exempt
-def requestBloodView(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            first_name = data.get('first_name')
-            last_name = data.get('last_name')
-            phone = data.get('phone')
-            gender = data.get('gender') 
-            blood_group = data.get('blood_group')
-            address = data.get('address')
-            note = data.get('note')
-
-            if not all([first_name, last_name, phone, gender, blood_group, address, note]):
-                return JsonResponse({"error": "All fields are required"}, status=400)
-
-          
-            request_blood = requestBlood(
-                first_name=first_name,
-                last_name=last_name,
-                phone=phone,
-                gender=gender,
-                blood_group=blood_group,
-                address=address,
-                note=note
-            )
-            request_blood.save()
-
-            return JsonResponse({"message": "Blood request submitted successfully"}, status=201)
-
-        except Exception as e:
-            return JsonResponse({"error": f"Error: Blood request failed - {str(e)}"}, status=500)
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
-@csrf_exempt
-def add(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            first_name = data.get("first_name")
-            last_name = data.get("last_name")
-            phone = data.get("phone")
-            email = data.get("email")
-            date_of_birth = data.get("date_of_birth")  
-            gender = data.get("gender")
-            blood_group = data.get("blood_group")
-            address = data.get("address")
-
-            if not all([first_name, last_name, phone, email, date_of_birth, gender, blood_group, address]):
-                return JsonResponse({"error": "All fields are required"}, status=400)
-
-            donate = donateBlood.objects.create(
-                first_name=first_name, last_name=last_name, phone=phone, 
-                email=email, date_of_birth=date_of_birth, gender=gender, 
-                blood_group=blood_group, address=address
-            )
-            return JsonResponse({"message": "Blood donation added successfully", "id": donate.id}, status=201)
-
-        except Exception as e:
-            return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
-        
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-
-@csrf_exempt
-def bloodHistory(request):
-    if request.method == "GET":
-        # Get all donateBlood objects
-        donatedb = donateBlood.objects.all()
-
-        # Convert the queryset into a list of dictionaries
-        donations = [
-            {
-                "id": d.id,
-                "first_name": d.first_name,
-                "last_name": d.last_name,
-                "phone": d.phone,
-                "email": d.email,
-                "date_of_birth": str(d.date_of_birth),
-                "gender": d.gender,
-                "blood_group": d.blood_group,
-                "address": d.address,
-            }
-            for d in donatedb
-        ]
-
-        return JsonResponse({"donations": donations}, safe=False)
-
-@csrf_exempt
-def editHistory(request, id):
-    donatedb = get_object_or_404(donateBlood, id=id)
-    return JsonResponse({
-        "id": donatedb.id, "first_name": donatedb.first_name, "last_name": donatedb.last_name,
-        "phone": donatedb.phone, "email": donatedb.email, "date_of_birth": str(donatedb.date_of_birth),
-        "gender": donatedb.gender, "blood_group": donatedb.blood_group, "address": donatedb.address
-    })
-
-@csrf_exempt
-def saveHistory(request, id):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            donatedb = get_object_or_404(donateBlood, id=id)
-
-            donatedb.first_name = data.get("first_name", donatedb.first_name)
-            donatedb.last_name = data.get("last_name", donatedb.last_name)
-            donatedb.phone = data.get("phone", donatedb.phone)
-            donatedb.email = data.get("email", donatedb.email)
-            donatedb.date_of_birth = data.get("date_of_birth", donatedb.date_of_birth)
-            donatedb.gender = data.get("gender", donatedb.gender)
-            donatedb.blood_group = data.get("blood_group", donatedb.blood_group)
-            donatedb.address = data.get("address", donatedb.address)
-
-            donatedb.save()
-            return JsonResponse({"message": "Blood donation updated successfully"}, status=200)
-
-        except Exception as e:
-            return JsonResponse({"error": f"Update failed: {str(e)}"}, status=500)
-
-@csrf_exempt
-def deleteHistory(request, id):
-    donatedb = get_object_or_404(donateBlood, id=id)
-    donatedb.delete()
-    return JsonResponse({"message": "Record deleted successfully"}, status=200) 
-
-
-@csrf_exempt
-def addRequest(request):
-    if request.method == "POST":
-        try:
-            # Parse JSON safely
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
-
-        # Extract fields
-        first_name = data.get("first_name")
-        last_name = data.get("last_name")
-        phone = data.get("phone")
-        blood_group = data.get("blood_group")
-        address = data.get("address")
-        gender = data.get("gender")
-        note = data.get("note", "")  
-
-        # Validate required fields
-        if None in [first_name, last_name, phone, blood_group, address, gender]:
-            return JsonResponse({"error": "All fields except note are required"}, status=400)
-
-        # Create request
-        requestbd = requestBlood.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-            blood_group=blood_group,
-            address=address,
-            gender=gender,
-            note=note
-        )
-
-        return JsonResponse({"message": "Blood request successfully created", "id": requestbd.id}, status=201)
-
-    # **Handle GET and other methods properly**
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-def getRequestHistory(request):
-    if request.method == "GET":
-
-        requestHst  = requestBlood.objects.all()
-
-        requested = [
-            {
-                "id": r.id,
-                "first_name" : r.first_name,
-                "last_name" :  r.last_name,
-                "phone" : r.phone,
-                "blood_group" : r.blood_group,
-                "address" : r.address,
-                "gender"  :  r.gender,
-                "note" : r.note,
-            }
-            for r in requestHst
-        ]
-
-        return JsonResponse({"requested": requested}, safe=False)
+    def post(self,request):
+        serializer = DonateBloodSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response ({'msg': 'Blood request submitted successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@csrf_exempt
-def editRequestHistory(request, id):
-    requestHst = get_object_or_404(requestBlood, id=id)
+    # def put (self,request,pk = None):
+    #     don = get_object_or_404(donateBlood, pk = pk)
+    #     serializer =  DonateBloodSerializer(don,data = request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({'msg': 'Data updated successfully'}, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # def patch (self,request, pk = None):
+    #     don = get_object_or_404(donateBlood,pk = pk )
+    #     serializer = DonateBloodSerializer(don, data = request.data, partial = True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({'msg': 'Partial update successful'}, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({
-        "id": requestHst.id, "first_name": requestHst.first_name, "last_name" : requestHst.last_name, "phone": requestHst.phone, "blood_group": requestHst.blood_group,
-        "address": requestHst.address, "gender":requestHst.gender, "note": requestHst.note
-    })
+    # def delete(self, request, pk=None):
+    #     req = get_object_or_404(requestBlood, pk=pk)
+    #     req.delete()
+    #     return Response({'msg': 'Data deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
-   
-@csrf_exempt
-def  saveRequestHistory(request, id):
-    if request.method =="POST":
-        try:  
-            data = json.loads(request.body)
-            requestHst = get_object_or_404(requestBlood, id = id)
+class ViewAllRequests(APIView):
+    permission_classes = [IsAuthenticated, IsDonor]
 
-            requestHst.first_name =  data.get("first_name",requestHst.first_name)
-            requestHst.last_name =  data.get("last_name",requestHst.last_name)
-            requestHst.phone =  data.get("phone",requestHst.phone)
-            requestHst.blood_group =  data.get("blood_group",requestHst.blood_group)
-            requestHst.address =  data.get("address",requestHst.address)
-            requestHst.gender =  data.get("gender",requestHst.gender)
-            requestHst.note =  data.get("note",requestHst.note)
+    def get(self, request):
+        reqs = requestBlood.objects.all()
+        serializer = RequestBLoodSerializers(reqs, many=True)
+        return Response(serializer.data)
 
-            requestHst.save()
 
-            return JsonResponse({"message":"Blood request updated successfully"}, status=200)
+class RequestBloodView(APIView):
+    permission_classes = [IsAuthenticated, IsRequester]
+    def get(self, request, pk=None):
+        if pk:
+            req = get_object_or_404(requestBlood, pk=pk)
+            serializer = RequestBLoodSerializers(req)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            approved_requests = requestBlood.objects.filter(is_approved=True)  
+            serializer = RequestBLoodSerializers(approved_requests, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self, request):
+        serializer = RequestBLoodSerializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Blood request submitted successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def put(self, request, pk=None):
+    #     req = get_object_or_404(requestBlood, pk=pk)
+    #     serializer = RequestBLoodSerializers(req, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({'msg': 'Data updated successfully'}, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def patch(self, request, pk=None):
+    #     req = get_object_or_404(requestBlood, pk=pk)
+    #     serializer = RequestBLoodSerializers(req, data=request.data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({'msg': 'Partial update successful'}, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def delete(self, request, pk=None):
+    #     req = get_object_or_404(requestBlood, pk=pk)
+    #     req.delete()
+    #     return Response({'msg': 'Data deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ViewAllDonors(APIView):
+    permission_classes = [IsAuthenticated, IsRequester]
+
+    def get(self, request):
+        donors = donateBlood.objects.all()
+        serializer = DonateBloodSerializer(donors, many=True)
+        return Response(serializer.data)
+
+
+class AcceptRequestView(APIView):
+    permission_classes = [IsAuthenticated, IsDonor]
+
+    def post(self, request, pk):
+        req = get_object_or_404(requestBlood, pk=pk)
+
+        if req.accepted_by:
+            return Response({'msg': 'Already accepted'}, status=400)
+
+        req.accepted_by = request.user
+        req.save()
+        return Response({'msg': 'Request accepted by donor'})
+
+class ContactView(APIView):
+    def post(self,request):
+        serializer = ContactSerializers(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Blood request submitted successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get(self, request):
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        # Ensure only one profile per user
+        if Profile.objects.filter(user=request.user).exists():
+            return Response({'error': 'Profile already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = ProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response({'msg': 'Profile created successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer = ProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Profile updated successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Profile partially updated'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        profile = get_object_or_404(Profile, user=request.user)
+        profile.delete()
+        return Response({'msg': 'Profile deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class MyDonationView(APIView):
+    permission_classes = [IsAuthenticated, IsDonor]
+
+    def get(self, request):
+        donations = donateBlood.objects.filter(user=request.user)
+        serializer = DonateBloodSerializer(donations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        donation = get_object_or_404(donateBlood, pk=pk, user=request.user)
+        donation.delete()
+        return Response({'msg': 'Your donation entry was deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, pk):
+        donation = get_object_or_404(donateBlood, pk=pk, user=request.user)
+        serializer = DonateBloodSerializer(donation, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Your donation entry was updated'}, status=status.HTTP_200_OK)
         
-        except Exception as  e:
-            return  JsonResponse({"error": f"update failed:{str(e)}"}, status  =  500)
-        
-@csrf_exempt
-def deleteRequestHistory(request, id):
-        
-    requestHst = get_object_or_404(requestBlood, id=id)
-    requestHst.delete()
-    return JsonResponse({"message": "Blood request deleted successfully"}, status=200)
-  
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        donation = get_object_or_404(donateBlood, pk=pk, user=request.user)
+        serializer = DonateBloodSerializer(donation, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Your donation entry was updated'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MyRequestView(APIView):
+    permission_classes = [IsAuthenticated, IsRequester]
+
+    def get(self, request):
+        requests = requestBlood.objects.filter(user=request.user)
+        serializer = RequestBLoodSerializers(requests, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        req = get_object_or_404(requestBlood, pk=pk, user=request.user)
+        req.delete()
+        return Response({'msg': 'Your request was deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        req = get_object_or_404(requestBlood, pk=pk, user=request.user)
+        serializer = RequestBLoodSerializers(req, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Your request was updated'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        req = get_object_or_404(requestBlood, pk=pk, user=request.user)
+        serializer = RequestBLoodSerializers(req, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Your request was updated'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@csrf_exempt
-def bloodContact(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            name = data.get('name')
-            email = data.get('email')
-            address = data.get('address')
-            feedback = data.get('feedback')
+class ApproveDonationView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
 
-            if  not all ([name,email,address,feedback]):
-                return  JsonResponse({"error":"All fields are required"},status =405)
-            
-            contact = Contact(name = name,  email = email, address = address, feedback = feedback)
-            contact.save()
+    def post(self, request, pk):
+        donation = get_object_or_404(donateBlood, pk=pk)
 
-            return JsonResponse({"message": "Message send successfully"}, status=201)
+        if donation.is_approved:
+            return Response({'msg': 'Already approved'}, status=400)
 
-        except Exception as e:
-            return JsonResponse({"message":"Your feedback has been successfully sent."}, status=200)
-        
-    return JsonResponse({'error':"Method not allowed"},status = 405)
+        donation.is_approved = True
+        donation.save()
 
- 
+        stock, created = BloodStock.objects.get_or_create(blood_group=donation.blood_group)
+        stock.quantity += 1
+        stock.save()
+
+        return Response({'msg': 'Donation approved and stock updated'}, status=200)
+
+
+class ApproveRequestView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, pk):
+        req = get_object_or_404(requestBlood, pk=pk)
+
+        if req.is_approved:
+            return Response({'msg': 'Already approved'}, status=400)
+
+        stock = BloodStock.objects.filter(blood_group=req.blood_group).first()
+        if not stock or stock.quantity < 1:
+            return Response({'error': 'Not enough stock'}, status=400)
+
+        req.is_approved = True
+        req.save()
+
+        stock.quantity -= 1
+        stock.save()
+
+        return Response({'msg': 'Request approved and stock reduced'}, status=200)

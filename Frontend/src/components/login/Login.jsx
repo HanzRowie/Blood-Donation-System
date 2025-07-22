@@ -14,7 +14,7 @@ const Login = ({ setIsAuthenticated }) => {
     setError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/donate/login/", {
+      const response = await fetch("http://127.0.0.1:8000/donate/LoginView/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -22,16 +22,30 @@ const Login = ({ setIsAuthenticated }) => {
         body: JSON.stringify({ username, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Invalid username or password");
+        // Show backend error message if available
+        const backendError = data && (data.message || data.data || data.detail || data.error);
+        setError(backendError || "Invalid username or password");
+        return;
       }
 
-      const data = await response.json();
-      localStorage.setItem("token", data.token); // Store token in local storage
+      // Store tokens and user info
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("role", data.role);
       setIsAuthenticated(true);
-      navigate("/"); // Redirect to home after login
+      if (data.role === "doner") {
+        navigate("/donor-dashboard");
+      } else if (data.role === "requester") {
+        navigate("/requester-dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.message);
+      setError("An error occurred. Please try again.");
     }
   };
 
