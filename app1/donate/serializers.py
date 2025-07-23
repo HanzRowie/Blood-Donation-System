@@ -83,14 +83,24 @@ class LoginSerializer(serializers.Serializer):
 
 
 class DonateBloodSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = donateBlood
         fields = '__all__'
+        extra_fields = ['username']
+
+    def get_username(self, obj):
+        return obj.user.username if obj.user else None
 
 class RequestBLoodSerializers(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = requestBlood
         fields = '__all__'
+        extra_fields = ['username']
+
+    def get_username(self, obj):
+        return obj.user.username if obj.user else None
 
 class ContactSerializers(serializers.ModelSerializer):
     class Meta:

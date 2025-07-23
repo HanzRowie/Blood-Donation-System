@@ -1,0 +1,155 @@
+.blood-stories-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #b71c1c;
+    margin-bottom: 2.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  
+  .stories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .story-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .story-card .header {
+    background: #f8f8f8;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .story-card .header img {
+    max-height: 50px;
+  }
+  
+  .story-card .content {
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .story-card .content img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+  
+  .story-card .content h3 {
+    color: #d32f2f;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .story-card .content p {
+    color: #333;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  .story-card .footer {
+    background: #e8f5e9;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #c8e6c9;
+  }
+  
+  .story-card .footer p {
+    color: #1b5e20;
+    font-size: 1rem;
+    margin: 0;
+  }
+  
+  .story-form {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .story-form input[type="text"],
+  .story-form textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .story-form input[type="text"]:focus,
+  .story-form textarea:focus {
+    border-color: #d32f2f;
+    outline: none;
+  }
+  
+  .story-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  
+  .story-form input[type="file"] {
+    border: none;
+    padding: 0.5rem 0;
+  }
+  
+  .story-form button {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  
+  .story-form button:hover {
+    background: #b71c1c;
+  }
+  
+  .story-form button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  @media (max-width: 600px) {
+    .blood-stories-container {
+      padding: 1rem;
+    }
+    .story-card {
+      max-width: 100%;
+    }
+    .story-form {
+      padding: 1.5rem;
+      max-width: 100%;
+    }
+  }

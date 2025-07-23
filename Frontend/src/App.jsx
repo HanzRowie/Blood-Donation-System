@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import Home from "./components/home/Home";
 import Signin from "./components/signin/Signin";
 import Login from "./components/login/Login";
@@ -21,6 +21,9 @@ import DonorDonations from "./components/donorDashboard/DonorDonations";
 import DonorAcceptRequests from "./components/donorDashboard/DonorAcceptRequests";
 import RequesterRequests from "./components/requesterDashboard/RequesterRequests";
 import AvailableDonors from "./components/requesterDashboard/AvailableDonors";
+import ChatRoom from "./components/requesterDashboard/ChatRoom";
+import DonorChatRooms from "./components/donorDashboard/DonorChatRooms";
+import BloodStories from "./components/bloodStories/BloodStories";
 
 import "./App.css";
 
@@ -50,6 +53,7 @@ function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/not-authorized" element={<NotAuthorized />} />
+          <Route path="/blood-stories" element={<BloodStories />} />
 
           {/* Donor-only routes */}
           <Route
@@ -88,6 +92,10 @@ function App() {
               />
             }
           />
+          <Route
+            path="/donor-chatrooms"
+            element={<RoleProtectedRoute element={<DonorChatRooms />} allowedRoles={["donor"]} />}
+          />
 
           {/* Requester-only routes */}
           <Route
@@ -125,6 +133,10 @@ function App() {
                 allowedRoles={["requester"]}
               />
             }
+          />
+          <Route
+            path="/chat/:chatroomName"
+            element={<RoleProtectedRoute element={<ChatRoom />} allowedRoles={["requester", "donor"]} />}
           />
 
           {/* Both roles */}
