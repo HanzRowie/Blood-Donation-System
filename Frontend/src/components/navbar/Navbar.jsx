@@ -72,6 +72,10 @@ const Navbar = () => {
             <li className="nav-item">
               <Link className="nav-link" to="/contact">Contact Us</Link>
             </li>
+           <li className="nav-item">
+              <Link className="nav-link" to="/blood-stories">Blood Stories</Link>
+            </li>
+
           </ul>
         </div>
 
