@@ -10,6 +10,16 @@ User = get_user_model()
 def get_members(chatgroup):
     return list(chatgroup.members.all())
 
+def get_message_data(message_id):
+    msg = GroupMessage.objects.select_related('author', 'group').get(id=message_id)
+    return {
+        'id': msg.id,
+        'body': msg.body,
+        'author': msg.author.username,
+        'created_at': str(msg.created_at),
+        'group': msg.group.group_name
+    }
+
 class ChatroomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         try:
@@ -89,18 +99,13 @@ class ChatroomConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         try:
             print(f"[DEBUG] chat_message() called with event: {event}")
-            message = await database_sync_to_async(GroupMessage.objects.get)(id=event['message_id'])
-            print(f"[SEND] Sending message ID {message.id} to chatroom {self.chatroom_name}")
+            # Fetch all message data in a sync context
+            message_data = await database_sync_to_async(get_message_data)(event['message_id'])
+            print(f"[SEND] Sending message ID {message_data['id']} to chatroom {self.chatroom_name}")
             await self.send(text_data=json.dumps({
                 'type': 'chat.message',
-                'message': {
-                    'id': message.id,
-                    'body': message.body,
-                    'author': message.author.username,
-                    'created_at': str(message.created_at),
-                    'group': message.group.group_name
-                }
+                'message': message_data
             }))
-            print(f"[DEBUG] Message sent to WebSocket: {message.id}")
+            print(f"[DEBUG] Message sent to WebSocket: {message_data['id']}")
         except Exception as e:
             print(f"[EXCEPTION in chat_message()] {e}")
