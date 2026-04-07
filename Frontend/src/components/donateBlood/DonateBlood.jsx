@@ -27,7 +27,7 @@ const DonateBloodForm = () => {
         const data = { first_name: firstName, last_name: lastName, phone, email, date_of_birth: dateOfBirth, gender, blood_group: bloodGroup, address };
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/donate/donateblood/', {
+            const response = await fetch('https://blood-donation-system-e0b5.onrender.com/donate/donateblood/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./BloodStories.css";
-const API_BASE = "http://localhost:8000/donate/BloodStoryView/"; // Note the trailing slash
+const API_BASE = "https://blood-donation-system-e0b5.onrender.com/donate/BloodStoryView/"; // Note the trailing slash
 
 const BloodStories = () => {
   const [stories, setStories] = useState([]);

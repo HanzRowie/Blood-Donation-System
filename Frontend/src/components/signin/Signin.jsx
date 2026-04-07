@@ -28,7 +28,7 @@ function Signin({ setIsAuthenticated }) {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/donate/RegisterView/", {
+      const response = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/RegisterView/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),

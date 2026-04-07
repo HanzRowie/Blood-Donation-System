@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://127.0.0.1:8000/donate/ViewAllRequests/";
-const ACCEPT_URL = "http://127.0.0.1:8000/donateacceptrequest/";
+const API_URL = "https://blood-donation-system-e0b5.onrender.com/donate/ViewAllRequests/";
+const ACCEPT_URL = "https://blood-donation-system-e0b5.onrender.com/donateacceptrequest/";
 
 const DonorAcceptRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -59,7 +59,7 @@ const DonorAcceptRequests = () => {
       return;
     }
     try {
-      const res = await fetch(`http://127.0.0.1:8000/chat/get_or_create_private_chatroom/${username}/`, {
+      const res = await fetch(`https://blood-donation-system-e0b5.onrender.com/chat/get_or_create_private_chatroom/${username}/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access")}`,

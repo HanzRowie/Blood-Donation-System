@@ -24,7 +24,7 @@ const BloodRequestHistory = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/donate/getRequestHistory/");
+      const response = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/getRequestHistory/");
       if (response.ok) {
         const data = await response.json();
         setRequests(data.requested);
@@ -44,8 +44,8 @@ const BloodRequestHistory = () => {
 
   const handleSubmit = async () => {
     const url = editingId
-      ? `http://127.0.0.1:8000/donate/saveRequestHistory/${editingId}/`
-      : "http://127.0.0.1:8000/donate/addRequest/";
+      ? `https://blood-donation-system-e0b5.onrender.com/donate/saveRequestHistory/${editingId}/`
+      : `https://blood-donation-system-e0b5.onrender.com/donate/addRequest/`;
 
     const scrollY = window.scrollY; // Save scroll position before submitting
 
@@ -82,7 +82,7 @@ const BloodRequestHistory = () => {
 
   const handleEdit = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/donate/editRequestHistory/${id}/`);
+      const response = await fetch(`https://blood-donation-system-e0b5.onrender.com/donate/editRequestHistory/${id}/`);
       if (response.ok) {
         const data = await response.json();
         setFormData(data);
@@ -101,7 +101,7 @@ const BloodRequestHistory = () => {
   const confirmDeletion = async () => {
     if (confirmDelete) {
       try {
-        await fetch(`http://127.0.0.1:8000/donate/deleteRequestHistory/${confirmDelete}/`, { method: "POST" });
+        await fetch(`https://blood-donation-system-e0b5.onrender.com/donate/deleteRequestHistory/${confirmDelete}/`, { method: "POST" });
         fetchRequests();
       } catch (err) {
         setError("An error occurred while deleting the record.");

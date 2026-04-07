@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://127.0.0.1:8000/chat/api/user/";
-const GROUPS_URL = "http://127.0.0.1:8000/chat/api/chatrooms/";
+const API_URL = "https://blood-donation-system-e0b5.onrender.com/chat/api/user/";
+const GROUPS_URL = "https://blood-donation-system-e0b5.onrender.com/chat/api/chatrooms/";
 
 const DonorChatRooms = () => {
   const [chatrooms, setChatrooms] = useState([]);

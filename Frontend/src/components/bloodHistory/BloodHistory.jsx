@@ -25,7 +25,7 @@ const BloodDonationHistory = () => {
 
   const fetchDonations = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/donate/DonateBloodView/", {
+      const response = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/DonateBloodView/", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access")}`,
         },
@@ -51,8 +51,8 @@ const BloodDonationHistory = () => {
 
   const handleSubmit = async () => {
     const url = editingId
-      ? `http://127.0.0.1:8000/donate/DonateBloodView/${editingId}/`
-      : "http://127.0.0.1:8000/donate/add/";
+      ? `https://blood-donation-system-e0b5.onrender.com/donate/DonateBloodView/${editingId}/`
+      : `https://blood-donation-system-e0b5.onrender.com/donate/add/`;
 
     const method = "POST";
     const scrollY = window.scrollY; // Save current scroll position
@@ -97,7 +97,7 @@ const BloodDonationHistory = () => {
 
   const handleEdit = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/donate/DonateBloodView/${id}/`, {
+      const response = await fetch(`https://blood-donation-system-e0b5.onrender.com/donate/DonateBloodView/${id}/`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access")}`,
         },
@@ -124,7 +124,7 @@ const BloodDonationHistory = () => {
   const confirmDeletion = async () => {
     if (confirmDelete) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/donate/DonateBloodView/${confirmDelete}/`, {
+        const response = await fetch(`https://blood-donation-system-e0b5.onrender.com/donate/DonateBloodView/${confirmDelete}/`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access")}`,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API_URL = "http://127.0.0.1:8000/donate/MyRequMyDonationView/";
+const API_URL = "https://blood-donation-system-e0b5.onrender.com/donate/MyRequMyDonationView/";
 
 const RequesterRequests = () => {
   const [requests, setRequests] = useState([]);

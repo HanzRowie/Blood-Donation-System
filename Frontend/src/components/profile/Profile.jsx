@@ -29,7 +29,7 @@ const Profile = () => {
     setError("");
     setMessage("");
     try {
-      const res = await fetch("http://127.0.0.1:8000/donate/profile/", {
+      const res = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/profile/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch profile");
@@ -96,7 +96,7 @@ const Profile = () => {
       }
     });
     try {
-      const res = await fetch("http://127.0.0.1:8000/donate/profile/", {
+      const res = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/profile/", {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -116,7 +116,7 @@ const Profile = () => {
     setError("");
     setMessage("");
     try {
-      const res = await fetch("http://127.0.0.1:8000/donate/profile/", {
+      const res = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/profile/", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

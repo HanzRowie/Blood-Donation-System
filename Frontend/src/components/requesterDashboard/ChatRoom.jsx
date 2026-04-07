@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const WS_BASE = "ws://127.0.0.1:8000/ws/chatroom/";
-const API_BASE = "http://127.0.0.1:8000/chat/api/chatroom/";
+const WS_BASE = "https://blood-donation-system-e0b5.onrender.com/ws/chatroom/";
+const API_BASE = "https://blood-donation-system-e0b5.onrender.com/chat/api/chatroom/";
 
 const ChatRoom = () => {
   const { chatroomName } = useParams();

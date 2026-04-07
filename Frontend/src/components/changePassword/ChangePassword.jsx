@@ -17,7 +17,7 @@ const ChangePassword = () => {
       return;
     }
     try {
-      const response = await fetch("http://127.0.0.1:8000/donate/changepassword/", {
+      const response = await fetch("https://blood-donation-system-e0b5.onrender.com/donate/changepassword/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
