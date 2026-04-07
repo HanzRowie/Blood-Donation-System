@@ -73,6 +73,11 @@ class SearchRequest(APIView):
         }, status=status.HTTP_200_OK)
 
 
+from django.core.mail import send_mail
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 class RegisterView(APIView):
     def post(self, request):
@@ -83,7 +88,7 @@ class RegisterView(APIView):
             if not serializer.is_valid():
                 return Response({
                     'data': serializer.errors,
-                    'message': "Something went wrong"
+                    'message': "Validation failed"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             user = serializer.save()
@@ -92,25 +97,24 @@ class RegisterView(APIView):
             user_name = user.first_name
 
             subject = "Welcome to Our Platform!"
-            message = f"Hi {user_name},\n\nThank you for registering with us. Your account has been created successfully.\n\nBest regards,\nYour Team"
+            message = f"Hi {user_name},\n\nYour account has been created successfully."
 
+            # ✅ EMAIL SHOULD NOT BREAK REGISTRATION
             try:
                 send_mail(
                     subject=subject,
                     message=message,
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[user_email],
-                    fail_silently=False,
+                    fail_silently=True,   # 🔥 IMPORTANT
                 )
             except Exception as e:
-                return Response({
-                    'data': str(e),
-                    'message': "User created but email failed to send"
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                print("Email failed:", e)
 
+            # ✅ ALWAYS SUCCESS RESPONSE
             return Response({
                 'data': {},
-                'message': "Your account has been created successfully and a confirmation email has been sent"
+                'message': "User registered successfully"
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
